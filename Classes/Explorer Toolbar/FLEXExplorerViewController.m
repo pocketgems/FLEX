@@ -173,10 +173,17 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
 
 #pragma mark - Rotation
 
-- (PEInterfaceOrientationMask)supportedInterfaceOrientations
+#ifdef __IPHONE_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+    UIInterfaceOrientationMask supportedOrientations;
+#else
+- (NSUInteger)supportedInterfaceOrientations
+{
+    NSUInteger supportedOrientations;
+#endif
     UIViewController *viewControllerToAsk = [self viewControllerForStatusBarAndOrientationProperties];
-    UIInterfaceOrientationMask supportedOrientations = [FLEXUtility infoPlistSupportedInterfaceOrientationsMask];
+    supportedOrientations = [FLEXUtility infoPlistSupportedInterfaceOrientationsMask];
     if (viewControllerToAsk && viewControllerToAsk != self) {
         supportedOrientations = [viewControllerToAsk supportedInterfaceOrientations];
     }
