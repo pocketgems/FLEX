@@ -6,12 +6,13 @@
 //  Copyright (c) 2014 Flipboard. All rights reserved.
 //
 
+#import <WebKit/WebKit.h>
 #import "FLEXWebViewController.h"
 #import "FLEXUtility.h"
 
-@interface FLEXWebViewController () <UIWebViewDelegate>
+@interface FLEXWebViewController () <WKNavigationDelegate>
 
-@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) NSString *originalText;
 
 @end
@@ -22,10 +23,13 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.webView = [[UIWebView alloc] init];
-        self.webView.delegate = self;
-        self.webView.dataDetectorTypes = UIDataDetectorTypeLink;
-        self.webView.scalesPageToFit = YES;
+        self.webView = [[WKWebView alloc] init];
+        self.webView.navigationDelegate = self;
+        self.webView.configuration.dataDetectorTypes = UIDataDetectorTypeLink;
+        self.webView.contentMode = UIViewContentModeScaleToFill;
+        #if !TARGET_OS_IPHONE
+            self.webView.allowsMagnification = YES;
+        #endif
     }
     return self;
 }
@@ -70,21 +74,19 @@
 }
 
 
-#pragma mark - UIWebView Delegate
+#pragma mark - WKNavigationDelegate Delegate
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
-    BOOL shouldStart = NO;
-    if (navigationType == UIWebViewNavigationTypeOther) {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    if (navigationAction.navigationType == WKNavigationTypeOther) {
         // Allow the initial load
-        shouldStart = YES;
+        decisionHandler(WKNavigationActionPolicyAllow);
     } else {
         // For clicked links, push another web view controller onto the navigation stack so that hitting the back button works as expected.
         // Don't allow the current web view do handle the navigation.
-        FLEXWebViewController *webVC = [[[self class] alloc] initWithURL:[request URL]];
+        FLEXWebViewController *webVC = [[[self class] alloc] initWithURL:[navigationAction.request URL]];
         [self.navigationController pushViewController:webVC animated:YES];
+        decisionHandler(WKNavigationActionPolicyCancel);
     }
-    return shouldStart;
 }
 
 
