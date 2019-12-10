@@ -37,7 +37,7 @@ static void range_callback(task_t task, void *context, unsigned type, vm_range_t
         vm_range_t range = ranges[i];
         flex_maybe_object_t *tryObject = (flex_maybe_object_t *)range.address;
         Class tryClass = NULL;
-#ifdef __arm64__
+#ifdef CHECK_BEFORE_RELEASE && __arm64__
         // See http://www.sealiesoftware.com/blog/archive/2013/09/24/objc_explain_Non-pointer_isa.html
         extern uint64_t objc_debug_isa_class_mask WEAK_IMPORT_ATTRIBUTE;
         tryClass = (__bridge Class)((void *)((uint64_t)tryObject->isa & objc_debug_isa_class_mask));
