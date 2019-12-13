@@ -18,7 +18,7 @@
 
 @property (nonatomic, strong) UIWebView *webView;
 #else
-@interface FLEXWebViewController () <WKNavigationDelegate>
+@interface FLEXWebViewController () <WKUIDelegate, WKNavigationDelegate>
 
 @property (nonatomic, strong) WKWebView *webView;
 #endif
@@ -39,6 +39,7 @@
         self.webView.scalesPageToFit = YES;
 #else
         self.webView = [[WKWebView alloc] init];
+        self.webView.UIDelegate = self;
         self.webView.navigationDelegate = self;
         self.webView.configuration.dataDetectorTypes = UIDataDetectorTypeLink;
         self.webView.contentMode = UIViewContentModeScaleToFill;
@@ -120,6 +121,14 @@
         [self.navigationController pushViewController:webVC animated:YES];
         decisionHandler(WKNavigationActionPolicyCancel);
     }
+}
+
+#pragma mark - WKUIDelegate Delegate
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    if (!navigationAction.targetFrame.isMainFrame) {
+        [webView loadRequest:navigationAction.request];
+    }
+    return nil;
 }
 #endif
 
