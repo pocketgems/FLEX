@@ -25,7 +25,7 @@
     if (self) {
         WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
 
-        configuration.dataDetectorTypes = UIDataDetectorTypeLink;
+        configuration.dataDetectorTypes = WKDataDetectorTypeLink;
 
         self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
         self.webView.navigationDelegate = self;
