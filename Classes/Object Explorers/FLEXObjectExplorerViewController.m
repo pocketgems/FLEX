@@ -162,7 +162,7 @@ static const NSInteger kFLEXObjectExplorerScopeIncludeInheritanceIndex = 1;
 - (void)updateTableData
 {
     [self updateCustomData];
-    [self updateProperties];
+    [self updateObjectExplorerProperties];
     [self updateIvars];
     [self updateMethods];
     [self updateClassMethods];
@@ -205,7 +205,7 @@ static const NSInteger kFLEXObjectExplorerScopeIncludeInheritanceIndex = 1;
 
 #pragma mark - Properties
 
-- (void)updateProperties
+- (void)updateObjectExplorerProperties
 {
     Class class = [self.object class];
     self.properties = [[self class] propertiesForClass:class];
